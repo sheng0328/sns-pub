@@ -10,6 +10,14 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
+/* GET users listing. */
+router.post('/', function(req, res, next) {
+  console.log(req, safeCycles(), 2);
+  //console.log(_(req).toString());
+  //console.log(req);
+  res.send('respond with a resource');
+});
+
 // A JSON stringifier that handles cycles safely.
 // Usage: JSON.stringify(obj, safeCycles())
 function safeCycles() {
