@@ -4,16 +4,19 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  console.log(req, safeCycles(), 2);
-  console.log(req.headers, safeCycles(), 2);
-  console.log(req.body, safeCycles(), 2);
+  console.log('headers: ');
+  console.log(req.headers, safeCycles());
+  console.log('body: ');
+  console.log(req.body, safeCycles());
   res.send('router.get respond with a resource');
 });
 
 /* GET users listing. */
 router.post('/', function(req, res, next) {
-  console.log(req.headers, safeCycles(), 2);
-  console.log(req.body, safeCycles(), 2);
+  console.log('headers: ');
+  console.log(req.headers, safeCycles());
+  console.log('body: ');
+  console.log(req.body, safeCycles());
   res.send('router.post respond with a resource');
 });
 
