@@ -1,1 +1,1 @@
-# sns-publish
+# sns-pub
