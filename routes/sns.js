@@ -5,18 +5,22 @@ var router = express.Router();
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   console.log('headers: ');
-  console.log(JSON.stringify(req.headers, undefined, 2));
+  console.log(req.headers);
+  //console.log(JSON.stringify(req.headers, undefined, 2));
   console.log('body: ');
-  console.log(JSON.stringify(req.body, undefined, 2));
+  console.log(req.body);
+  //console.log(JSON.stringify(req.body, undefined, 2));
   res.send('router.get respond with a resource');
 });
 
 /* GET users listing. */
 router.post('/', function(req, res, next) {
   console.log('headers: ');
-  console.log(JSON.stringify(req.headers, undefined, 2));
+  console.log(req.headers);
+  //console.log(JSON.stringify(req.headers, undefined, 2));
   console.log('body: ');
-  console.log(JSON.stringify(req.body, undefined, 2));
+  console.log(req.body);
+  //console.log(JSON.stringify(req.body, undefined, 2));
   res.send('router.post respond with a resource');
 });
 
