@@ -59,7 +59,7 @@ function setAlarmState(alarmName) {
       if (err) console.log(err, err.stack); // an error occurred
       else     console.log(data);           // successful response
     });
-  }, 30 * 1000);
+  }, 60 * 1000);
 }
 
 module.exports = router;
