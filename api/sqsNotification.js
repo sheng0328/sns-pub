@@ -29,8 +29,8 @@ router.post('/', function(req, res, next) {
     });
   }
 
-  var message = req.body.Message;
-  if (message) {
+  if (req.body.Type === 'Notification') {
+    var message = JSON.parse(req.body.Message);
     var alarmName = message.AlarmName;
     if (alarmName) {
       console.log('=== process alarm ===');
