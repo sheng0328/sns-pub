@@ -39,21 +39,6 @@ router.post('/', function(req, res, next) {
       console.log('sqsName = ' + sqsName);
 
       setAlarmState(alarmName);
-      // setTomeout(function() {
-      //   var options = { region: 'us-west-2' };
-      //   var cloudwatch  = new AWS.CloudWatch(options);
-      //
-      //   var params = {
-      //     AlarmName: alarmName,
-      //     StateReason: 'Reset Alarm',
-      //     StateValue: 'OK'
-      //   };
-      //   cloudwatch.setAlarmState(params, function(err, data) {
-      //     console.log('=== setAlarmState ===');
-      //     if (err) console.log(err, err.stack); // an error occurred
-      //     else     console.log(data);           // successful response
-      //   });
-      // }, 60 * 1000);
     }
   }
   res.send('router.post respond with a resource');
@@ -74,7 +59,7 @@ function setAlarmState(alarmName) {
       if (err) console.log(err, err.stack); // an error occurred
       else     console.log(data);           // successful response
     });
-  }, 10 * 1000);
+  }, 30 * 1000);
 }
 
 module.exports = router;
