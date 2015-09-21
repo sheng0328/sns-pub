@@ -1,17 +1,22 @@
-var https = require('https');
+var _ = require('lodash');
 var urlParse = require('url-parse');
 
 exports.execRequest = function(urlString, callback) {
   var url = urlParse(urlString);
+  //console.log(url);
+
+  var http = require(_.startsWith(url.protocol, 'https')? 'https' : 'http');
+
   var options = {
     hostname: url.host,
-    port: 443,
+    port: url.port || _.startsWith(url.protocol, 'https')? 443 : 80,
     method: 'GET',
     path: url.pathname + url.query
   };
+  //console.log(options);
 
   var data = {};
-  var req = https.request(options, function(res) {
+  var req = http.request(options, function(res) {
     res.setEncoding('utf8');
 
     var responseBody = '';
