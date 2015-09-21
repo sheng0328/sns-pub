@@ -44,7 +44,7 @@ function setAlarmState() {
   var params = {
     AlarmName: 'alarmDataQ',
     StateReason: 'Reset Alarm',
-    StateValue: 'INSUFFICIENT_DATA'
+    StateValue: 'OK'
   };
   cloudwatch.setAlarmState(params, function(err, data) {
     if (err) console.log(err, err.stack); // an error occurred

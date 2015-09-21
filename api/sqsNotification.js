@@ -56,6 +56,7 @@ function setAlarmState(alarmName) {
     StateValue: 'OK'
   };
   cloudwatch.setAlarmState(params, function(err, data) {
+    console.log('=== setAlarmState ===');
     if (err) console.log(err, err.stack); // an error occurred
     else     console.log(data);           // successful response
   });
