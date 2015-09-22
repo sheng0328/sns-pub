@@ -1,4 +1,5 @@
 var AWS = require('aws-sdk');
+var async = require('async');
 var _ = require('lodash');
 var curl = require('../utils/curl');
 var express = require('express');
