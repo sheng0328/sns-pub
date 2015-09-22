@@ -41,13 +41,17 @@ router.post('/', function(req, res, next) {
       //receiveMessage(sqsName);
       //setAlarmState(alarmName);
 
-      async.auto({
-        receiveMessage: function(callback) {
-          receiveMessage(sqsName, callback);
-        }
-      }, function(err, results) {
-        setAlarmState(alarmName);
-      });
+      try {
+        async.auto({
+          receiveMessage: function(callback) {
+            receiveMessage(sqsName, callback);
+          }
+        }, function(err, results) {
+          setAlarmState(alarmName);
+        });
+      } catch (ex) {
+        console.log(ex);
+      }
     }
   }
   res.send('router.post respond with a resource');
