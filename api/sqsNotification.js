@@ -75,20 +75,25 @@ function receiveMessage(sqsName) {
           var body = JSON.parse(message.Body);
           console.log('receiptHandle = ' + receiptHandle);
           console.log(body.Records[0]);
+
+          deleteMessage(sqsName, receiptHandle);
         });
 			}
 		}
 	});
 }
 
-function delMsg(msg) {
+function deleteMessage(sqsName, receiptHandle) {
+  var options = { region: 'us-west-2' };
+  var sqs = new AWS.SQS(options);
+
 	var params = {
-		QueueUrl: queueUrl,
-		ReceiptHandle: msg.ReceiptHandle
+		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
+		ReceiptHandle: receiptHandle
 	};
 
 	sqs.deleteMessage(params, function(err, data) {
-      console.log('=== deleteMessage ===');
+      console.log('=== delete sqs message ===');
       if (err) console.log(err, err.stack);
       else     console.log(data);
 	});
