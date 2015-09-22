@@ -38,30 +38,7 @@ router.post('/', function(req, res, next) {
       console.log('alarmName = ' + alarmName);
       console.log('sqsName = ' + sqsName);
 
-      console.log('=== receive sqs message ===');
-      var options = { region: 'us-west-2' };
-      var sqs = new AWS.SQS(options);
-
-    	var params = {
-    		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
-    		MaxNumberOfMessages: 1
-    	};
-
-    	sqs.receiveMessage(params, function(err, data) {
-    		console.log('=== receive sqs message ===');
-    		if (err) {
-    			console.log(err, err.stack);
-    		} else {
-    			console.log(data);
-    			if (data.Messages) {
-            data.Messages.forEach(function(message) {
-              console.log(message);
-            });
-    			}
-    		}
-    	});
-      
-      //receiveMessage(sqlName);
+      recMsg(sqlName);
       //setAlarmState(alarmName);
 
       // async.auto({
@@ -76,8 +53,7 @@ router.post('/', function(req, res, next) {
   res.send('router.post respond with a resource');
 });
 
-function receiveMessage(sqsName) {
-  console.log('=== receive sqs message ===');
+function recMsg(sqsName) {
   var options = { region: 'us-west-2' };
   var sqs = new AWS.SQS(options);
 
