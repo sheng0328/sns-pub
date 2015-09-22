@@ -38,50 +38,43 @@ router.post('/', function(req, res, next) {
       console.log('alarmName = ' + alarmName);
       console.log('sqsName = ' + sqsName);
 
-      recMsg(sqlName);
+      receiveMessage(sqsName);
       //setAlarmState(alarmName);
 
-      res.send('router.post respond with a resource');
       // async.auto({
       //   receiveMessage: function(callback) {
-      //     receiveMessage(sqlName, callback);
+      //     receiveMessage(sqsName, callback);
       //   }
       // }, function(err, results) {
       //   setAlarmState(alarmName);
       // });
-    } else {
-      res.send('router.post respond with a resource');
     }
-  } else {
-    res.send('router.post respond with a resource');
   }
-  //res.send('router.post respond with a resource');
+  res.send('router.post respond with a resource');
 });
 
-function recMsg(sqsName) {
-  console.log('=== receive sqs message ===');
+function receiveMessage(sqsName) {
+  var options = { region: 'us-west-2' };
+  var sqs = new AWS.SQS(options);
 
-  // var options = { region: 'us-west-2' };
-  // var sqs = new AWS.SQS(options);
-  //
-	// var params = {
-	// 	QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
-	// 	MaxNumberOfMessages: 1
-	// };
-  //
-	// sqs.receiveMessage(params, function(err, data) {
-	// 	console.log('=== receive sqs message ===');
-	// 	if (err) {
-	// 		console.log(err, err.stack);
-	// 	} else {
-	// 		console.log(data);
-	// 		if (data.Messages) {
-  //       data.Messages.forEach(function(message) {
-  //         console.log(message);
-  //       });
-	// 		}
-	// 	}
-	// });
+	var params = {
+		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
+		MaxNumberOfMessages: 1
+	};
+
+	sqs.receiveMessage(params, function(err, data) {
+		console.log('=== receive sqs message ===');
+		if (err) {
+			console.log(err, err.stack);
+		} else {
+			console.log(data);
+			if (data.Messages) {
+        data.Messages.forEach(function(message) {
+          console.log(message);
+        });
+			}
+		}
+	});
 }
 
 function delMsg(msg) {
