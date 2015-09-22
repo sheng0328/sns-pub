@@ -59,7 +59,7 @@ function receiveMessage(sqsName) {
 
 	var params = {
 		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
-		MaxNumberOfMessages: 1
+		MaxNumberOfMessages: 10
 	};
 
 	sqs.receiveMessage(params, function(err, data) {
@@ -67,10 +67,13 @@ function receiveMessage(sqsName) {
 		if (err) {
 			console.log(err, err.stack);
 		} else {
-			console.log(data);
+			//console.log(data);
 			if (data.Messages) {
         data.Messages.forEach(function(message) {
-          console.log(message);
+          var receiptHandle = message.ReceiptHandle;
+          var body = JSON.parse(message.Body);
+          console.log('receiptHandle = ' + receiptHandle);
+          console.log(body.Records[0]);
         });
 			}
 		}
