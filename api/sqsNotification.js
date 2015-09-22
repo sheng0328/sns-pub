@@ -68,18 +68,9 @@ function processNotification(message) {
       function() { return count === 2 },
       function(err) {
         console.log('=== process notification finish ===');
-        console.log(err);
         setAlarmState(alarmName);
       }
     );
-
-    // async.auto({
-    //   receiveMessage: function(callback) {
-    //     receiveMessage(sqsName, callback);
-    //   }
-    // }, function(err, results) {
-    //   setAlarmState(alarmName);
-    // });
   }
 }
 
@@ -103,15 +94,15 @@ function receiveMessage(sqsName, callback) {
         console.log('length = ' + data.Messages.length);
         count = data.Messages.length;
 
-        // data.Messages.forEach(function(message) {
-        //   var receiptHandle = message.ReceiptHandle;
-        //   var body = JSON.parse(message.Body);
-        //   console.log('receiptHandle = ' + receiptHandle);
-        //   console.log(body.Records[0]);
-        //
-        //   deleteMessage(sqsName, receiptHandle);
-        //   callback(null, '');
-        // });
+        data.Messages.forEach(function(message) {
+          var receiptHandle = message.ReceiptHandle;
+          var body = JSON.parse(message.Body);
+          //console.log('receiptHandle = ' + receiptHandle);
+          console.log(body.Records[0]);
+
+          //deleteMessage(sqsName, receiptHandle);
+          //callback(null, '');
+        });
         callback(null, count);
 			} else {
         console.log('length = 0');
@@ -138,6 +129,7 @@ function deleteMessage(sqsName, receiptHandle) {
 }
 
 function setAlarmState(alarmName) {
+  console.log('=== set tomeout ===');
   setTimeout(function() {
     var options = { region: 'us-west-2' };
     var cloudwatch  = new AWS.CloudWatch(options);
@@ -152,7 +144,7 @@ function setAlarmState(alarmName) {
       if (err) console.log(err, err.stack); // an error occurred
       else     console.log(data);           // successful response
     });
-  }, 60 * 1000);
+  }, 90 * 1000);
 }
 
 module.exports = router;
