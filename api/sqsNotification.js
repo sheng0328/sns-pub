@@ -41,6 +41,7 @@ router.post('/', function(req, res, next) {
       recMsg(sqlName);
       //setAlarmState(alarmName);
 
+      res.send('router.post respond with a resource');
       // async.auto({
       //   receiveMessage: function(callback) {
       //     receiveMessage(sqlName, callback);
@@ -48,9 +49,13 @@ router.post('/', function(req, res, next) {
       // }, function(err, results) {
       //   setAlarmState(alarmName);
       // });
+    } else {
+      res.send('router.post respond with a resource');
     }
+  } else {
+    res.send('router.post respond with a resource');
   }
-  res.send('router.post respond with a resource');
+  //res.send('router.post respond with a resource');
 });
 
 function recMsg(sqsName) {
