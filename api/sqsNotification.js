@@ -38,22 +38,22 @@ router.post('/', function(req, res, next) {
       console.log('alarmName = ' + alarmName);
       console.log('sqsName = ' + sqsName);
 
-      receiveMessage(sqsName);
+      //receiveMessage(sqsName);
       //setAlarmState(alarmName);
 
-      // async.auto({
-      //   receiveMessage: function(callback) {
-      //     receiveMessage(sqsName, callback);
-      //   }
-      // }, function(err, results) {
-      //   setAlarmState(alarmName);
-      // });
+      async.auto({
+        receiveMessage: function(callback) {
+          receiveMessage(sqsName, callback);
+        }
+      }, function(err, results) {
+        setAlarmState(alarmName);
+      });
     }
   }
   res.send('router.post respond with a resource');
 });
 
-function receiveMessage(sqsName) {
+function receiveMessage(sqsName, callback) {
   var options = { region: 'us-west-2' };
   var sqs = new AWS.SQS(options);
 
@@ -77,8 +77,12 @@ function receiveMessage(sqsName) {
           console.log(body.Records[0]);
 
           deleteMessage(sqsName, receiptHandle);
+          callback(null, '');
         });
-			}
+			} else {
+        console.log('length = 0');
+        callback(null, '');
+      }
 		}
 	});
 }
