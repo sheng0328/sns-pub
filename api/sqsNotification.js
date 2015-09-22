@@ -69,6 +69,7 @@ function receiveMessage(sqsName) {
 		} else {
 			//console.log(data);
 			if (data.Messages) {
+        console.log('length = ' + data.Messages.length);
         data.Messages.forEach(function(message) {
           var receiptHandle = message.ReceiptHandle;
           var body = JSON.parse(message.Body);
