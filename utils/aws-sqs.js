@@ -47,7 +47,8 @@ function sndMsg() {
 
 function recMsg() {
 	var params = {
-		QueueUrl: queueUrl
+		QueueUrl: queueUrl,
+		MaxNumberOfMessages: 1
 	};
 
 	sqs.receiveMessage(params, function(err, data) {

@@ -38,11 +38,59 @@ router.post('/', function(req, res, next) {
       console.log('alarmName = ' + alarmName);
       console.log('sqsName = ' + sqsName);
 
-      setAlarmState(alarmName);
+      //receiveMessage(sqlName);
+      //setAlarmState(alarmName);
+
+      async.auto({
+        receiveMessage: function(callback) {
+          receiveMessage(sqlName, callback);
+        }
+      }, function(err, results) {
+        setAlarmState(alarmName);
+      });
     }
   }
   res.send('router.post respond with a resource');
 });
+
+function receiveMessage(sqsName, callback) {
+  var options = { region: 'us-west-2' };
+  var sqs = new AWS.SQS(options);
+
+	var params = {
+		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
+		MaxNumberOfMessages: 1
+	};
+
+	sqs.receiveMessage(params, function(err, data) {
+		console.log('=== receiveMessage ===');
+		if (err) {
+			console.log(err, err.stack);
+		} else {
+			console.log(data);
+			if (data.Messages) {
+        data.Message.forEach(function(message) {
+          console.log(message);
+        });
+				//delMsg(data.Messages[0]);
+			}
+		}
+    callback(null, '');
+	});
+}
+
+function delMsg(msg) {
+	var params = {
+		QueueUrl: queueUrl,
+		ReceiptHandle: msg.ReceiptHandle
+	};
+
+	sqs.deleteMessage(params, function(err, data) {
+      console.log('=== deleteMessage ===');
+      if (err) console.log(err, err.stack);
+      else     console.log(data);
+	});
+}
 
 function setAlarmState(alarmName) {
   setTimeout(function() {
