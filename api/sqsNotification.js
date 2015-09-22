@@ -69,13 +69,11 @@ function receiveMessage(sqsName) {
 		} else {
 			console.log(data);
 			if (data.Messages) {
-        data.Message.forEach(function(message) {
+        data.Messages.forEach(function(message) {
           console.log(message);
         });
-				//delMsg(data.Messages[0]);
 			}
 		}
-    //callback(null, '');
 	});
 }
 
