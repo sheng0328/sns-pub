@@ -33,7 +33,7 @@ router.post('/', function(req, res, next) {
     var message = JSON.parse(req.body.Message);
     var alarmName = message.AlarmName;
     if (alarmName) {
-      console.log('=== process alarm ===');
+      console.log('=== process cloudwatch alarm ===');
       sqsName = message.Trigger.Dimensions[0].value;
       console.log('alarmName = ' + alarmName);
       console.log('sqsName = ' + sqsName);
@@ -54,6 +54,7 @@ router.post('/', function(req, res, next) {
 });
 
 function receiveMessage(sqsName) {
+  console.log('=== receive sqs message ===');
   var options = { region: 'us-west-2' };
   var sqs = new AWS.SQS(options);
 
@@ -63,7 +64,7 @@ function receiveMessage(sqsName) {
 	};
 
 	sqs.receiveMessage(params, function(err, data) {
-		console.log('=== receiveMessage ===');
+		console.log('=== receive sqs message ===');
 		if (err) {
 			console.log(err, err.stack);
 		} else {
@@ -101,7 +102,7 @@ function setAlarmState(alarmName) {
       StateValue: 'OK'
     };
     cloudwatch.setAlarmState(params, function(err, data) {
-      console.log('=== setAlarmState ===');
+      console.log('=== set cloudwatch alarm state ===');
       if (err) console.log(err, err.stack); // an error occurred
       else     console.log(data);           // successful response
     });
