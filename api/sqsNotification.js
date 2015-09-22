@@ -89,7 +89,7 @@ function receiveMessage(sqsName, callback) {
 		if (err) {
 			console.log(err, err.stack);
 		} else {
-			//console.log(data);
+			console.log(data);
 			if (data.Messages) {
         console.log('length = ' + data.Messages.length);
         count = data.Messages.length;
