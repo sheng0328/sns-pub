@@ -38,16 +38,16 @@ router.post('/', function(req, res, next) {
       console.log('alarmName = ' + alarmName);
       console.log('sqsName = ' + sqsName);
 
-      //receiveMessage(sqlName);
+      receiveMessage(sqlName);
       //setAlarmState(alarmName);
 
-      async.auto({
-        receiveMessage: function(callback) {
-          receiveMessage(sqlName, callback);
-        }
-      }, function(err, results) {
-        setAlarmState(alarmName);
-      });
+      // async.auto({
+      //   receiveMessage: function(callback) {
+      //     receiveMessage(sqlName, callback);
+      //   }
+      // }, function(err, results) {
+      //   setAlarmState(alarmName);
+      // });
     }
   }
   res.send('router.post respond with a resource');
@@ -75,7 +75,7 @@ function receiveMessage(sqsName, callback) {
 				//delMsg(data.Messages[0]);
 			}
 		}
-    callback(null, '');
+    //callback(null, '');
 	});
 }
 
