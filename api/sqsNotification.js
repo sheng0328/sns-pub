@@ -51,7 +51,7 @@ function confirmSubscription(subscribeURL) {
 function processNotification(message) {
   var alarmName = message.AlarmName;
   if (alarmName) {
-    console.log('=== process cloudwatch alarm ===');
+    console.log('=== process notification ===');
     sqsName = message.Trigger.Dimensions[0].value;
     console.log('alarmName = ' + alarmName);
     console.log('sqsName = ' + sqsName);
@@ -59,7 +59,7 @@ function processNotification(message) {
     var count = 0;
 
     async.doWhilst(
-      function(callback)   {
+      function(callback) {
         receiveMessage(sqsName, function(err, data) {
           count = data;
           callback(null, data);
@@ -67,7 +67,9 @@ function processNotification(message) {
       },
       function() { return count === 2 },
       function(err) {
+        console.log('=== process notification finish ===');
         console.log(err);
+        setAlarmState(alarmName);
       }
     );
 
