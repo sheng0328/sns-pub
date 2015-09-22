@@ -22,41 +22,64 @@ router.post('/', function(req, res, next) {
   };
   console.log(JSON.stringify(data, undefined, 2));
 
-  if (req.body.SubscribeURL) {
-    console.log('=== subscribe url ===');
-    curl.execRequest(req.body.SubscribeURL, function(err, data) {
+  if (req.body.Type === 'SubscriptionConfirmation') {
+    confirmSubscription(req.body.SubscribeURL);
+  }
+
+  if (req.body.Type === 'Notification') {
+    try {
+      var message = JSON.parse(req.body.Message);
+      processNotification(message);
+    } catch (ex) {
+      console.log(ex);
+    }
+  }
+
+  res.send('router.post respond with a resource');
+});
+
+function confirmSubscription(subscribeURL) {
+  if (subscribeURL) {
+    console.log('=== confirm subscription ===');
+    curl.execRequest(subscribeURL, function(err, data) {
       if (err) console.log(err);
       else     console.log(data);
     });
   }
+}
 
-  if (req.body.Type === 'Notification') {
-    var message = JSON.parse(req.body.Message);
-    var alarmName = message.AlarmName;
-    if (alarmName) {
-      console.log('=== process cloudwatch alarm ===');
-      sqsName = message.Trigger.Dimensions[0].value;
-      console.log('alarmName = ' + alarmName);
-      console.log('sqsName = ' + sqsName);
+function processNotification(message) {
+  var alarmName = message.AlarmName;
+  if (alarmName) {
+    console.log('=== process cloudwatch alarm ===');
+    sqsName = message.Trigger.Dimensions[0].value;
+    console.log('alarmName = ' + alarmName);
+    console.log('sqsName = ' + sqsName);
 
-      //receiveMessage(sqsName);
-      //setAlarmState(alarmName);
+    var count = 0;
 
-      try {
-        async.auto({
-          receiveMessage: function(callback) {
-            receiveMessage(sqsName, callback);
-          }
-        }, function(err, results) {
-          setAlarmState(alarmName);
+    async.doWhilst(
+      function(callback)   {
+        receiveMessage(sqsName, function(err, data) {
+          count = data;
+          callback(null, data);
         });
-      } catch (ex) {
-        console.log(ex);
+      },
+      function() { return count === 2 },
+      function(err) {
+        console.log(err);
       }
-    }
+    );
+
+    // async.auto({
+    //   receiveMessage: function(callback) {
+    //     receiveMessage(sqsName, callback);
+    //   }
+    // }, function(err, results) {
+    //   setAlarmState(alarmName);
+    // });
   }
-  res.send('router.post respond with a resource');
-});
+}
 
 function receiveMessage(sqsName, callback) {
   var options = { region: 'us-west-2' };
@@ -64,9 +87,10 @@ function receiveMessage(sqsName, callback) {
 
 	var params = {
 		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
-		MaxNumberOfMessages: 10
+		MaxNumberOfMessages: 2
 	};
 
+  var count = 0;
 	sqs.receiveMessage(params, function(err, data) {
 		console.log('=== receive sqs message ===');
 		if (err) {
@@ -75,18 +99,21 @@ function receiveMessage(sqsName, callback) {
 			//console.log(data);
 			if (data.Messages) {
         console.log('length = ' + data.Messages.length);
-        data.Messages.forEach(function(message) {
-          var receiptHandle = message.ReceiptHandle;
-          var body = JSON.parse(message.Body);
-          console.log('receiptHandle = ' + receiptHandle);
-          console.log(body.Records[0]);
+        count = data.Messages.length;
 
-          deleteMessage(sqsName, receiptHandle);
-          callback(null, '');
-        });
+        // data.Messages.forEach(function(message) {
+        //   var receiptHandle = message.ReceiptHandle;
+        //   var body = JSON.parse(message.Body);
+        //   console.log('receiptHandle = ' + receiptHandle);
+        //   console.log(body.Records[0]);
+        //
+        //   deleteMessage(sqsName, receiptHandle);
+        //   callback(null, '');
+        // });
+        callback(null, count);
 			} else {
         console.log('length = 0');
-        callback(null, '');
+        callback(null, count);
       }
 		}
 	});
