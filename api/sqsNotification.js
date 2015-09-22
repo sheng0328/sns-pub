@@ -53,7 +53,7 @@ router.post('/', function(req, res, next) {
   res.send('router.post respond with a resource');
 });
 
-function receiveMessage(sqsName, callback) {
+function receiveMessage(sqsName) {
   var options = { region: 'us-west-2' };
   var sqs = new AWS.SQS(options);
 
