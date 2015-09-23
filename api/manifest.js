@@ -7,11 +7,11 @@ var router = express.Router();
 
 router.post('/', function(req, res, next) {
   //console.log(req);
-  //var connection = req.connection || {};
+  var connection = req.connection || {};
   var data = {
     header: req.headers,
     body: req.body,
-    connection: req.connection
+    remoteAddress: connection.remoteAddress
   };
   console.log(JSON.stringify(data, undefined, 2));
 
