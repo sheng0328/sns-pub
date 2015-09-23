@@ -6,21 +6,23 @@ var express = require('express');
 var router = express.Router();
 
 router.post('/', function(req, res, next) {
-  //console.log(req);
-  var connection = req.connection || {};
-  var data = {
-    header: req.headers,
-    body: req.body,
-    remoteAddress: connection.remoteAddress
-  };
-  console.log(JSON.stringify(data, undefined, 2));
+  {
+    console.log(req.baseUrl || req.url);
+    var connection = req.connection || {};
+    var data = {
+      header: req.headers,
+      body: req.body,
+      remoteAddress: connection.remoteAddress
+    };
+    console.log(JSON.stringify(data, undefined, 2));
+  }
 
   try {
     var count = 0;
 
     async.doWhilst(
       function(callback) {
-        receiveMessage(body.dataSQSRegion, body.dataSQSName, function(err, data) {
+        receiveMessage(req.body.dataSQSRegion, req.body.dataSQSName, function(err, data) {
           count = data;
           callback(null);
         });
@@ -35,7 +37,11 @@ router.post('/', function(req, res, next) {
     console.log(ex);
   }
 
-  res.send('router.post respond with a resource');
+  var responseBody = {
+    'errorCode': 0,
+    'errorMsg': ''
+  };
+  res.status(200).json(responseBody);
 });
 
 function receiveMessage(sqsRegion, sqsName, callback) {

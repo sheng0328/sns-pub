@@ -6,11 +6,16 @@ var express = require('express');
 var router = express.Router();
 
 router.post('/', function(req, res, next) {
-  var data = {
-    header: req.headers,
-    body: req.body
-  };
-  console.log(JSON.stringify(data, undefined, 2));
+  {
+    console.log(req.baseUrl || req.url);
+    var connection = req.connection || {};
+    var data = {
+      header: req.headers,
+      body: req.body,
+      remoteAddress: connection.remoteAddress
+    };
+    console.log(JSON.stringify(data, undefined, 2));
+  }
 
   if (req.body.Type === 'SubscriptionConfirmation') {
     confirmSubscription(req.body.SubscribeURL);
@@ -57,7 +62,7 @@ function receiveNotification(body) {
       'dataSQSName': sqsName
     }
   };
-  
+
   rest.performRequest(params, function(err, data) {
     if (err) console.log(err);
     else     console.log(data);
