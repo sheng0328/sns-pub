@@ -17,8 +17,9 @@ exports.performRequest = function(params, callback) {
   }
 
   var options = {
-    hostname: url.host,
-    port: url.port || _.startsWith(url.protocol, 'https')? 443 : 80,
+    hostname: url.hostname,
+    //port: url.port || _.startsWith(url.protocol, 'https')? 443 : 80,
+    port: url.port,
     method: params.method || 'GET',
     path: url.pathname + url.query,
     headers: headers,
