@@ -13,7 +13,7 @@ router.post('/', function(req, res, next) {
       header: req.headers,
       body: req.body
     };
-    console.log(JSON.stringify(data, undefined, 2));
+    //console.log(JSON.stringify(data, undefined, 2));
   }
 
   if (req.body.Type === 'SubscriptionConfirmation') {

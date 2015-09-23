@@ -49,7 +49,7 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 
 	var params = {
 		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
-		MaxNumberOfMessages: 5
+		MaxNumberOfMessages: 10
 	};
 
   var count = 0;
