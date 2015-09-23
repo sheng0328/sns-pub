@@ -26,7 +26,7 @@ router.post('/', function(req, res, next) {
           callback(null, '');
         });
       },
-      function() { return count === 5 },
+      function() { return count > 0 },
       function(err) {
         //console.log('=== process notification finish ===');
         //setAlarmState(alarmName);
