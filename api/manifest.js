@@ -22,7 +22,8 @@ router.post('/', function(req, res, next) {
     async.doWhilst(
       function(callback) {
         receiveMessage(req.body.dataSQSRegion, req.body.dataSQSName, function(err, data) {
-          count = data;
+          count = data.length;
+          console.log(data);
           callback(null, '');
         });
       },
@@ -59,6 +60,7 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 			console.log(err, err.stack);
 		} else {
 			//console.log(data);
+      var entries = [];
 			if (data.Messages) {
         console.log('length = ' + data.Messages.length);
         count = data.Messages.length;
@@ -69,15 +71,25 @@ function receiveMessage(sqsRegion, sqsName, callback) {
           //console.log('receiptHandle = ' + receiptHandle);
           var s3 = body.Records[0].s3;
           var sourceS3FullPath = 's3://' + s3.bucket.name + '/' + s3.object.key;
-          console.log(sourceS3FullPath);
+          entries.push({ 'url': sourceS3FullPath, 'mandatory': false });
+          //console.log(sourceS3FullPath);
+
+          // {
+          //   "entries": [
+          //     {"url":"s3://mybucket-alpha/2013-10-04-custdata", "mandatory":true},
+          //     {"url":"s3://mybucket-alpha/2013-10-05-custdata", "mandatory":true},
+          //     {"url":"s3://mybucket-beta/2013-10-04-custdata", "mandatory":true},
+          //     {"url":"s3://mybucket-beta/2013-10-05-custdata", "mandatory":true}
+          //   ]
+          // }
 
           //deleteMessage(sqsRegion, sqsName, receiptHandle);
           //callback(null, '');
         });
-        callback(null, count);
+        callback(null, entries);
 			} else {
         console.log('length = 0');
-        callback(null, count);
+        callback(null, entries);
       }
 		}
 	});
