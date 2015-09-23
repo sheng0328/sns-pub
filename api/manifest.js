@@ -1,7 +1,7 @@
 var AWS = require('aws-sdk');
 var async = require('async');
 var _ = require('lodash');
-var rest = require('../utils/rest');
+var curl = require('../utils/curl');
 var express = require('express');
 var router = express.Router();
 
@@ -12,19 +12,20 @@ router.post('/', function(req, res, next) {
   };
   console.log(JSON.stringify(data, undefined, 2));
 
+  /*
   if (req.body.Type === 'SubscriptionConfirmation') {
     confirmSubscription(req.body.SubscribeURL);
   }
 
   if (req.body.Type === 'Notification') {
     try {
-      //var message = JSON.parse(req.body.Message);
-      //processNotification(message);
-      receiveNotification(req.body);
+      var message = JSON.parse(req.body.Message);
+      processNotification(message);
     } catch (ex) {
       console.log(ex);
     }
   }
+  */
 
   res.send('router.post respond with a resource');
 });
@@ -32,35 +33,11 @@ router.post('/', function(req, res, next) {
 function confirmSubscription(subscribeURL) {
   if (subscribeURL) {
     console.log('=== confirm subscription ===');
-    var params = {
-      'url': subcribeURL
-    };
-    rest.performRequest(params, function(err, data) {
+    curl.execRequest(subscribeURL, function(err, data) {
       if (err) console.log(err);
       else     console.log(data);
     });
   }
-}
-
-function receiveNotification(body) {
-  var TopicArn = body.TopicArn;
-  var region = topicArn.split(':')[3];
-  var message = JSON.parse(body.Message);
-  sqsName = message.Trigger.Dimensions[0].value;
-
-  var params = {
-    'url': 'http://localhost:3000/api/v1/manifest',
-    'method': 'POST',
-    'requestBody': {
-      'dataSQSRegion': region,
-      'dataSQSName': sqsName
-    }
-  }
-
-  rest.performRequest(params, function(err, data) {
-    if (err) console.log(err);
-    else     console.log(data);
-  });
 }
 
 function processNotification(message) {

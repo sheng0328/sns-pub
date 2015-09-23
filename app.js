@@ -9,6 +9,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var sns = require('./routes/sns');
 var sqsNotification = require('./api/sqsNotification');
+var manifest = require('./api/manifest');
 
 var app = express();
 
@@ -29,6 +30,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/sns', sns);
 app.use('/api/v1/sqsNotification', sqsNotification);
+app.use('/api/v1/manifest', manifest);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
