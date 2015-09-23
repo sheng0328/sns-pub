@@ -15,62 +15,31 @@ router.post('/', function(req, res, next) {
   };
   console.log(JSON.stringify(data, undefined, 2));
 
-  /*
-  if (req.body.Type === 'SubscriptionConfirmation') {
-    confirmSubscription(req.body.SubscribeURL);
-  }
-
-  if (req.body.Type === 'Notification') {
-    try {
-      var message = JSON.parse(req.body.Message);
-      processNotification(message);
-    } catch (ex) {
-      console.log(ex);
-    }
-  }
-  */
-
-  res.send('router.post respond with a resource');
-});
-
-function confirmSubscription(subscribeURL) {
-  if (subscribeURL) {
-    console.log('=== confirm subscription ===');
-    curl.execRequest(subscribeURL, function(err, data) {
-      if (err) console.log(err);
-      else     console.log(data);
-    });
-  }
-}
-
-function processNotification(message) {
-  var alarmName = message.AlarmName;
-  if (alarmName) {
-    console.log('=== process notification ===');
-    sqsName = message.Trigger.Dimensions[0].value;
-    console.log('alarmName = ' + alarmName);
-    console.log('sqsName = ' + sqsName);
-
+  try {
     var count = 0;
 
     async.doWhilst(
       function(callback) {
-        receiveMessage(sqsName, function(err, data) {
+        receiveMessage(body.dataSQSRegion, body.dataSQSName, function(err, data) {
           count = data;
-          callback(null, data);
+          callback(null);
         });
       },
       function() { return count === 2 },
       function(err) {
-        console.log('=== process notification finish ===');
-        setAlarmState(alarmName);
+        //console.log('=== process notification finish ===');
+        //setAlarmState(alarmName);
       }
     );
+  } catch (ex) {
+    console.log(ex);
   }
-}
 
-function receiveMessage(sqsName, callback) {
-  var options = { region: 'us-west-2' };
+  res.send('router.post respond with a resource');
+});
+
+function receiveMessage(sqsRegion, sqsName, callback) {
+  var options = { region: sqsRegion };
   var sqs = new AWS.SQS(options);
 
 	var params = {
@@ -95,7 +64,7 @@ function receiveMessage(sqsName, callback) {
           //console.log('receiptHandle = ' + receiptHandle);
           console.log(body.Records[0]);
 
-          //deleteMessage(sqsName, receiptHandle);
+          //deleteMessage(sqsRegion, sqsName, receiptHandle);
           //callback(null, '');
         });
         callback(null, count);
@@ -107,8 +76,8 @@ function receiveMessage(sqsName, callback) {
 	});
 }
 
-function deleteMessage(sqsName, receiptHandle) {
-  var options = { region: 'us-west-2' };
+function deleteMessage(sqsRegion, sqsName, receiptHandle) {
+  var options = { region: sqsRegion };
   var sqs = new AWS.SQS(options);
 
 	var params = {
