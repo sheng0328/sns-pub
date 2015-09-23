@@ -23,7 +23,7 @@ router.post('/', function(req, res, next) {
       function(callback) {
         receiveMessage(req.body.dataSQSRegion, req.body.dataSQSName, function(err, data) {
           count = data;
-          callback(null);
+          callback(null, '');
         });
       },
       function() { return count === 5 },
@@ -67,7 +67,7 @@ function receiveMessage(sqsRegion, sqsName, callback) {
           var receiptHandle = message.ReceiptHandle;
           var body = JSON.parse(message.Body);
           //console.log('receiptHandle = ' + receiptHandle);
-          console.log(body.Records[0]);
+          console.log(body.Records[0].s3.object.key);
 
           //deleteMessage(sqsRegion, sqsName, receiptHandle);
           //callback(null, '');
