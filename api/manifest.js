@@ -67,7 +67,9 @@ function receiveMessage(sqsRegion, sqsName, callback) {
           var receiptHandle = message.ReceiptHandle;
           var body = JSON.parse(message.Body);
           //console.log('receiptHandle = ' + receiptHandle);
-          console.log(body.Records[0].s3.object.key);
+          var s3 = body.Records[0].s3;
+          var sourceS3FullPath = 's3://' + s3.bucket.name + '/' + s3.object.key;
+          console.log(sourceS3FullPath);
 
           //deleteMessage(sqsRegion, sqsName, receiptHandle);
           //callback(null, '');
