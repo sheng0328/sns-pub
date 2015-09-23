@@ -43,7 +43,7 @@ function confirmSubscription(subscribeURL) {
 }
 
 function receiveNotification(body) {
-  var TopicArn = body.TopicArn;
+  var topicArn = body.TopicArn;
   var region = topicArn.split(':')[3];
   var message = JSON.parse(body.Message);
   sqsName = message.Trigger.Dimensions[0].value;
