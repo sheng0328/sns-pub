@@ -6,11 +6,12 @@ var express = require('express');
 var router = express.Router();
 
 router.post('/', function(req, res, next) {
+  console.log(req);
   var data = {
     header: req.headers,
     body: req.body
   };
-  console.log(JSON.stringify(data, undefined, 2));
+  //console.log(JSON.stringify(data, undefined, 2));
 
   /*
   if (req.body.Type === 'SubscriptionConfirmation') {

@@ -3,7 +3,7 @@ var urlParse = require('url-parse');
 
 exports.performRequest = function(params, callback) {
   var url = urlParse(params.url);
-  console.log(url);
+  //console.log(url);
 
   var http = require(_.startsWith(url.protocol, 'https')? 'https' : 'http');
   var headers = {};
@@ -19,13 +19,12 @@ exports.performRequest = function(params, callback) {
   var options = {
     hostname: url.hostname,
     port: url.port || (_.startsWith(url.protocol, 'https')? 443 : 80),
-    //port: url.port,
     method: params.method || 'GET',
     path: url.pathname + url.query,
     headers: headers,
     rejectUnauthorized: false // let https ignore [Error: DEPTH_ZERO_SELF_SIGNED_CERT]
   };
-  console.log(options);
+  //console.log(options);
 
   var data = {};
   var req = http.request(options, function(res) {
