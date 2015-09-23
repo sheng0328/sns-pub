@@ -23,7 +23,7 @@ exports.performRequest = function(params, callback) {
     headers: headers,
     rejectUnauthorized: false // let https ignore [Error: DEPTH_ZERO_SELF_SIGNED_CERT]
   };
-  //console.log(options);
+  console.log(options);
 
   var data = {};
   var req = http.request(options, function(res) {
