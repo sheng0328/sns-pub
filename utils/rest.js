@@ -3,6 +3,7 @@ var urlParse = require('url-parse');
 
 exports.performRequest = function(params, callback) {
   var url = urlParse(params.url);
+  console.log(url);
 
   var http = require(_.startsWith(url.protocol, 'https')? 'https' : 'http');
   var headers = {};
