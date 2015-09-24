@@ -22,7 +22,7 @@ router.post('/', function(req, res, next) {
   try {
     var startUnixTime = moment().valueOf(); // milliseconds
     //var startUnixTime = moment().unix(); // seconds
-    var maxReceiveTime = 1 * 60 * 1000;
+    var maxReceiveTime = 300;
     var count = 0;
     var messages = [];
 
