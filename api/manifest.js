@@ -62,7 +62,7 @@ router.post('/', function(req, res, next) {
 
         var groups = _.chunk(messages, 10);
         groups.forEach(function(chunk) {
-          console.log(chunk);
+          console.log(chunk.length);
         });
 
         /*
