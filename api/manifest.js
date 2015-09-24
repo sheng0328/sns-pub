@@ -161,7 +161,7 @@ function putObject(region, bucket, key, data) {
 
 function sendMessage(region, sqsName, message) {
   var options = { region: region };
-  var s3 = new AWS.S3(options);
+  var sqs = new AWS.SQS(options);
 
   var params = {
     MessageBody: message,
