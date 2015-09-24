@@ -27,7 +27,8 @@ router.post('/', function(req, res, next) {
           //console.log(data);
           data.forEach(function(entry) {
             entries.push(entry);
-          }
+          });
+
           callback(null, '');
         });
       },
