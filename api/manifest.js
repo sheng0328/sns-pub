@@ -41,7 +41,21 @@ router.post('/', function(req, res, next) {
         var entriesGroup = _.chunk(entries, 10);
         entriesGroup.forEach(function(chunk) {
           console.log({ 'entries': chunk });
-          putObject(req.body.dataSQSRegion, req.body.dataSQSName, { 'entries': chunk });
+          var manifestS3Bucket = 'esc-manifest-sheng0328';
+          var manifestS3Key = path.join(req.body.dataSQSName, 'manifest', uuid.v4() + '.json');
+          putObject(req.body.dataSQSRegion, manifestS3Bucket, manifestS3Key, { 'entries': chunk });
+
+          var manifestSQSMessage = {
+            'manifestS3Region': req.body.dataSQSRegion,
+            'manifestS3Bucket': manifestS3Bucket,
+            'manifestS3Path': manifestS3Key,
+            'manifestSQSRegion': req.body.dataSQSRegion,
+            'manifestSQSName': 'ManifestSQS-sheng0328',
+            'sourceS3Region': req.body.dataSQSRegion,
+            'sourceS3Bucket': '<sourceS3Bucket>',
+            'sourceS3Prefix': '<sourceS3Prefix>'
+          };
+          sendMessage(req.body.dataSQSRegion, 'ManifestSQS-sheng0328', manifestSQSMessage);
         });
       }
     );
@@ -126,18 +140,35 @@ function deleteMessage(sqsRegion, sqsName, receiptHandle) {
 	});
 }
 
-function putObject(sqsRegion, sqsName, data) {
-  var options = { region: sqsRegion };
+function putObject(region, bucket, key, data) {
+  var options = { region: region };
   var s3 = new AWS.S3(options);
 
 	var params = {
-    Bucket: 'esc-manifest-sheng0328',
-    Key: path.join(sqsName, 'manifest', uuid.v4() + '.json'),
+    //Bucket: 'esc-manifest-sheng0328',
+    Bucket: bucket,
+    Key: key,
+    //Key: path.join(sqsName, 'manifest', uuid.v4() + '.json'),
     Body: JSON.stringify(data, undefined, 2)
 	};
 
   s3.putObject(params, function(err, data) {
     console.log('=== s3 put object ===');
+    if (err) console.log(err, err.stack); // an error occurred
+    else     console.log(data);           // successful response
+  });
+}
+
+function sendMessage(region, sqsName, message) {
+  var options = { region: region };
+  var s3 = new AWS.S3(options);
+
+  var params = {
+    MessageBody: message,
+    QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName
+  };
+  sqs.sendMessage(params, function(err, data) {
+    console.log('=== sqs send message ===');
     if (err) console.log(err, err.stack); // an error occurred
     else     console.log(data);           // successful response
   });
