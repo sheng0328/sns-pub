@@ -164,7 +164,7 @@ function sendMessage(region, sqsName, message) {
   var sqs = new AWS.SQS(options);
 
   var params = {
-    MessageBody: message,
+    MessageBody: JSON.stringify(message, undefined, 2),
     QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName
   };
   sqs.sendMessage(params, function(err, data) {
