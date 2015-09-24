@@ -51,7 +51,7 @@ router.post('/', function(req, res, next) {
       function() {
         var nowUnixTime = moment().valueOf();
         console.log('spent time (ms) = ' + (nowUnixTime - startUnixTime));
-        return count > 0 || (nowUnixTime - startUnixTime > maxReceiveTime);
+        return count > 0 || (maxReceiveTime > nowUnixTime - startUnixTime);
       },
       function(err) {
         console.log('=== process notification finish ===');
