@@ -36,7 +36,8 @@ router.post('/', function(req, res, next) {
       function(err) {
         console.log('=== process notification finish ===');
         //setAlarmState(alarmName);
-        console.log({ 'entries': entries });
+        console.log(_.chunk(entries, 10));
+        //console.log({ 'entries': entries });
       }
     );
   } catch (ex) {
@@ -58,7 +59,7 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
     AttributeNames: [ 'All' ],
 		MaxNumberOfMessages: 10,
-    WaitTimeSeconds: 20
+    WaitTimeSeconds: 0
 	};
 
   var count = 0;
@@ -74,13 +75,14 @@ function receiveMessage(sqsRegion, sqsName, callback) {
         count = data.Messages.length;
 
         data.Messages.forEach(function(message) {
+          console.log(message);
           var receiptHandle = message.ReceiptHandle;
           var body = JSON.parse(message.Body);
           //console.log('receiptHandle = ' + receiptHandle);
           var s3 = body.Records[0].s3;
           var sourceS3FullPath = 's3://' + s3.bucket.name + '/' + s3.object.key;
           entries.push({ 'url': sourceS3FullPath, 'mandatory': false });
-          console.log(sourceS3FullPath);
+          //console.log(sourceS3FullPath);
 
           // {
           //   "entries": [
