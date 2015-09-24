@@ -150,7 +150,7 @@ function deleteMessage(sqsRegion, sqsName, receiptHandle) {
 	});
 }
 
-function putObject(region, bucket, key, data) {
+function putObject(region, bucket, key, data, callback) {
   var options = { region: region };
   var s3 = new AWS.S3(options);
 
@@ -171,7 +171,7 @@ function putObject(region, bucket, key, data) {
   });
 }
 
-function sendMessage(region, sqsName, message) {
+function sendMessage(region, sqsName, message, callback) {
   var options = { region: region };
   var sqs = new AWS.SQS(options);
 
