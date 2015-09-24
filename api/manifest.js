@@ -58,7 +58,7 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
     AttributeNames: [ 'All' ],
 		MaxNumberOfMessages: 10,
-    WaitTimeSeconds: 35
+    WaitTimeSeconds: 20
 	};
 
   var count = 0;
