@@ -20,7 +20,6 @@ router.post('/', function(req, res, next) {
 
   try {
     var count = 0;
-    //var entries = [];
     var messages = [];
 
     async.doWhilst(
@@ -43,22 +42,11 @@ router.post('/', function(req, res, next) {
 
             callback(null);
           }
-
-          /*
-          count = data.length;
-          //console.log(data);
-          data.forEach(function(entry) {
-            entries.push(entry);
-          });
-
-          callback(null, '');
-          */
         });
       },
       function() { return count > 0 },
       function(err) {
         console.log('=== process notification finish ===');
-        //setAlarmState(alarmName);
 
         var groups = _.chunk(messages, 10); // split array
         groups.forEach(function(chunk) {
@@ -93,38 +81,6 @@ router.post('/', function(req, res, next) {
             console.log('finish a group ' + results);
           });
         });
-
-        /*
-        var entriesGroup = _.chunk(entries, 10);
-        entriesGroup.forEach(function(chunk) {
-          console.log({ 'entries': chunk });
-          var manifestS3Bucket = 'esc-manifest-sheng0328';
-          var manifestS3Key = path.join(req.body.dataSQSName, 'manifest', uuid.v4() + '.json');
-
-          var manifestSQSMessage = {
-            'manifestS3Region': req.body.dataSQSRegion,
-            'manifestS3Bucket': manifestS3Bucket,
-            'manifestS3Path': manifestS3Key,
-            'manifestSQSRegion': req.body.dataSQSRegion,
-            'manifestSQSName': 'ManifestSQS-sheng0328',
-            'sourceS3Region': req.body.dataSQSRegion,
-            'sourceS3Bucket': '<sourceS3Bucket>',
-            'sourceS3Prefix': '<sourceS3Prefix>'
-          };
-
-          async.series([
-              function(callback) {
-                putObject(req.body.dataSQSRegion, manifestS3Bucket, manifestS3Key, { 'entries': chunk }, callback);
-              },
-              function(callback) {
-                sendMessage(req.body.dataSQSRegion, 'ManifestSQS-sheng0328', manifestSQSMessage, callback);
-              }
-          ],
-          function(err, results) {
-            console.log(results);
-          });
-        });
-        */
       }
     );
   } catch (ex) {
@@ -150,67 +106,6 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 	};
 
   sqs.receiveMessage(params, callback);
-
-  /*
-  var count = 0;
-	sqs.receiveMessage(params, function(err, data) {
-		console.log('=== sqs receive message ===');
-		if (err) {
-			console.log(err, err.stack);
-      callback(err);
-		} else {
-			//console.log(data);
-      var entries = [];
-			if (data.Messages) {
-        console.log('length = ' + data.Messages.length);
-        count = data.Messages.length;
-
-        data.Messages.forEach(function(message) {
-          //console.log(message);
-          var receiptHandle = message.ReceiptHandle;
-          var body = JSON.parse(message.Body);
-          //console.log('receiptHandle = ' + receiptHandle);
-          var s3 = body.Records[0].s3;
-          var sourceS3FullPath = 's3://' + s3.bucket.name + '/' + s3.object.key;
-          entries.push({ 'url': sourceS3FullPath, 'mandatory': false });
-          console.log(sourceS3FullPath);
-
-          // {
-          //   "entries": [
-          //     {"url":"s3://mybucket-alpha/2013-10-04-custdata", "mandatory":true},
-          //     {"url":"s3://mybucket-alpha/2013-10-05-custdata", "mandatory":true},
-          //     {"url":"s3://mybucket-beta/2013-10-04-custdata", "mandatory":true},
-          //     {"url":"s3://mybucket-beta/2013-10-05-custdata", "mandatory":true}
-          //   ]
-          // }
-
-          //deleteMessage(sqsRegion, sqsName, receiptHandle);
-          //callback(null, '');
-        });
-        callback(null, entries);
-			} else {
-        console.log('length = 0');
-        callback(null, entries);
-      }
-		}
-	});
-  */
-}
-
-function deleteMessage(sqsRegion, sqsName, receiptHandle) {
-  var options = { region: sqsRegion };
-  var sqs = new AWS.SQS(options);
-
-	var params = {
-		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
-		ReceiptHandle: receiptHandle
-	};
-
-	sqs.deleteMessage(params, function(err, data) {
-      console.log('=== sqs delete message ===');
-      if (err) console.log(err, err.stack);
-      else     console.log(data);
-	});
 }
 
 function putObject(region, bucket, key, messages, callback) {
@@ -270,7 +165,6 @@ function deleteMessageBatch(sqsRegion, sqsName, messages, callback) {
     Entries: entries,
     QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName
   };
-  console.log(params);
 
 	sqs.deleteMessageBatch(params, function(err, data) {
       console.log('=== sqs delete message batch ===');
