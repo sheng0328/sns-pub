@@ -60,9 +60,35 @@ router.post('/', function(req, res, next) {
         console.log('=== process notification finish ===');
         //setAlarmState(alarmName);
 
-        var groups = _.chunk(messages, 10);
+        var groups = _.chunk(messages, 10); // split array
         groups.forEach(function(chunk) {
-          console.log(chunk.length);
+          console.log('length = ' + chunk.length);
+
+          var manifestS3Bucket = 'esc-manifest-sheng0328';
+          var manifestS3Key = path.join(req.body.dataSQSName, 'manifest', uuid.v4() + '.json');
+
+          var manifestSQSMessage = {
+            'manifestS3Region': req.body.dataSQSRegion,
+            'manifestS3Bucket': manifestS3Bucket,
+            'manifestS3Path': manifestS3Key,
+            'manifestSQSRegion': req.body.dataSQSRegion,
+            'manifestSQSName': 'ManifestSQS-sheng0328',
+            'sourceS3Region': req.body.dataSQSRegion,
+            'sourceS3Bucket': '<sourceS3Bucket>',
+            'sourceS3Prefix': '<sourceS3Prefix>'
+          };
+
+          async.series([
+              function(callback) {
+                putObject(req.body.dataSQSRegion, manifestS3Bucket, manifestS3Key, chunk, callback);
+              },
+              function(callback) {
+                sendMessage(req.body.dataSQSRegion, 'ManifestSQS-sheng0328', manifestSQSMessage, callback);
+              }
+          ],
+          function(err, results) {
+            console.log(results);
+          });
         });
 
         /*
@@ -184,16 +210,22 @@ function deleteMessage(sqsRegion, sqsName, receiptHandle) {
 	});
 }
 
-function putObject(region, bucket, key, data, callback) {
+function putObject(region, bucket, key, messages, callback) {
+  var entries = [];
+  messages.forEach(function(message) {
+    var body = JSON.parse(message.Body);
+    var s3 = body.Records[0].s3;
+    var sourceS3FullPath = 's3://' + s3.bucket.name + '/' + s3.object.key;
+    entries.push({ 'url': sourceS3FullPath, 'mandatory': false });
+  });
+
   var options = { region: region };
   var s3 = new AWS.S3(options);
 
 	var params = {
-    //Bucket: 'esc-manifest-sheng0328',
     Bucket: bucket,
     Key: key,
-    //Key: path.join(sqsName, 'manifest', uuid.v4() + '.json'),
-    Body: JSON.stringify(data, undefined, 2)
+    Body: JSON.stringify({ 'entries': entries }, undefined, 2)
 	};
 
   s3.putObject(params, function(err, data) {
