@@ -1,6 +1,7 @@
 var AWS = require('aws-sdk');
 var async = require('async');
 var _ = require('lodash');
+var moment = require('moment');
 var path = require('path');
 var uuid = require('uuid');
 var curl = require('../utils/curl');
@@ -19,6 +20,9 @@ router.post('/', function(req, res, next) {
   }
 
   try {
+    var startUnixTime = moment().valueOf(); // milliseconds
+    //var startUnixTime = moment().unix(); // seconds
+    var maxReceiveTime = 1 * 60 * 1000;
     var count = 0;
     var messages = [];
 
@@ -44,7 +48,11 @@ router.post('/', function(req, res, next) {
           }
         });
       },
-      function() { return count > 0 },
+      function() {
+        var nowUnixTime = moment().valueOf();
+        console.log('spent time (ms) = ' + (nowUnixTime - startUnixTime));
+        return count > 0 || (nowUnixTime - startUnixTime > maxReceiveTime);
+      },
       function(err) {
         console.log('=== process notification finish ===');
 
