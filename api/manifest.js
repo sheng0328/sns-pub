@@ -84,10 +84,13 @@ router.post('/', function(req, res, next) {
               },
               function(callback) {
                 sendMessage(req.body.dataSQSRegion, 'ManifestSQS-sheng0328', manifestSQSMessage, callback);
+              },
+              function(callback) {
+                deleteMessageBatch(req.body.dataSQSRegion, req.body.dataSQSRegion, chunk, callback);
               }
           ],
           function(err, results) {
-            console.log(results);
+            console.log('finish a group ' + results);
           });
         });
 
@@ -237,8 +240,8 @@ function putObject(region, bucket, key, messages, callback) {
   });
 }
 
-function sendMessage(region, sqsName, message, callback) {
-  var options = { region: region };
+function sendMessage(sqsRegion, sqsName, message, callback) {
+  var options = { region: sqsRegion };
   var sqs = new AWS.SQS(options);
 
   var params = {
@@ -252,6 +255,29 @@ function sendMessage(region, sqsName, message, callback) {
 
     callback(null, 'sqsSendMessage');
   });
+}
+
+function deleteMessageBatch(sqsRegion, sqsName, messages, receiptHandle) {
+  var entries = [];
+  messages.forEach(function(message) {
+    entries.push({ 'Id': message.MessageId, 'ReceiptHandle': message.ReceiptHandle });
+  });
+
+  var options = { region: sqsRegion };
+  var sqs = new AWS.SQS(options);
+
+  var params = {
+    Entries: entries,
+    QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName
+  };
+
+	sqs.deleteMessageBatch(params, function(err, data) {
+      console.log('=== sqs delete message batch ===');
+      if (err) console.log(err, err.stack);
+      else     console.log(data);
+
+      callback(null, 'sqsDeleteMessageBatch');
+	});
 }
 
 function setAlarmState(alarmName) {
