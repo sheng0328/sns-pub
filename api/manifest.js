@@ -36,7 +36,7 @@ router.post('/', function(req, res, next) {
       function(err) {
         console.log('=== process notification finish ===');
         //setAlarmState(alarmName);
-        //console.log(entries);
+        console.log({ 'entries': entries });
       }
     );
   } catch (ex) {
@@ -56,8 +56,8 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 
 	var params = {
 		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
-		MaxNumberOfMessages: 10
-    //WaitTimeSeconds: 10
+		MaxNumberOfMessages: 10,
+    WaitTimeSeconds: 10
 	};
 
   var count = 0;
