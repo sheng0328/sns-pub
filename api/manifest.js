@@ -133,7 +133,7 @@ function putObject(sqsRegion, sqsName, data) {
 	var params = {
     Bucket: 'esc-manifest-sheng0328',
     Key: path.join(sqsName, 'manifest', uuid.v4() + '.json'),
-    Body: JSON.stringify(data)
+    Body: JSON.stringify(data, undefined, 2)
 	};
 
   s3.putObject(params, function(err, data) {
