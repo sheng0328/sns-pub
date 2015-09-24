@@ -86,7 +86,7 @@ router.post('/', function(req, res, next) {
                 sendMessage(req.body.dataSQSRegion, 'ManifestSQS-sheng0328', manifestSQSMessage, callback);
               },
               function(callback) {
-                deleteMessageBatch(req.body.dataSQSRegion, req.body.dataSQSRegion, chunk, callback);
+                deleteMessageBatch(req.body.dataSQSRegion, req.body.dataSQSName, chunk, callback);
               }
           ],
           function(err, results) {
@@ -257,7 +257,7 @@ function sendMessage(sqsRegion, sqsName, message, callback) {
   });
 }
 
-function deleteMessageBatch(sqsRegion, sqsName, messages, receiptHandle) {
+function deleteMessageBatch(sqsRegion, sqsName, messages, callback) {
   var entries = [];
   messages.forEach(function(message) {
     entries.push({ 'Id': message.MessageId, 'ReceiptHandle': message.ReceiptHandle });
@@ -270,6 +270,7 @@ function deleteMessageBatch(sqsRegion, sqsName, messages, receiptHandle) {
     Entries: entries,
     QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName
   };
+  console.log(params);
 
 	sqs.deleteMessageBatch(params, function(err, data) {
       console.log('=== sqs delete message batch ===');
