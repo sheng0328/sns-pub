@@ -1,6 +1,8 @@
 var AWS = require('aws-sdk');
 var async = require('async');
 var _ = require('lodash');
+var path = require('path');
+var uuid = require('uuid');
 var curl = require('../utils/curl');
 var express = require('express');
 var router = express.Router();
@@ -39,6 +41,7 @@ router.post('/', function(req, res, next) {
         var entriesGroup = _.chunk(entries, 10);
         entriesGroup.forEach(function(chunk) {
           console.log({ 'entries': chunk });
+          putObject(req.body.dataSQSRegion, req.body.dataSQSName, { 'entries': chunk });
         });
       }
     );
@@ -66,7 +69,7 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 
   var count = 0;
 	sqs.receiveMessage(params, function(err, data) {
-		console.log('=== receive sqs message ===');
+		console.log('=== sqs receive message ===');
 		if (err) {
 			console.log(err, err.stack);
 		} else {
@@ -117,10 +120,27 @@ function deleteMessage(sqsRegion, sqsName, receiptHandle) {
 	};
 
 	sqs.deleteMessage(params, function(err, data) {
-      console.log('=== delete sqs message ===');
+      console.log('=== sqs delete message ===');
       if (err) console.log(err, err.stack);
       else     console.log(data);
 	});
+}
+
+function putObject(sqsRegion, sqsName, data) {
+  var options = { region: sqsRegion };
+  var s3 = new AWS.S3(options);
+
+	var params = {
+    Bucket: 'esc-manifest-sheng0328',
+    Key: path.join(sqsName, 'manifest', uuid.v4() + '.json'),
+    Body: JSON.stringify(data)
+	};
+
+  s3.putObject(params, function(err, data) {
+    console.log('=== s3 put object ===');
+    if (err) console.log(err, err.stack); // an error occurred
+    else     console.log(data);           // successful response
+  });
 }
 
 function setAlarmState(alarmName) {
@@ -135,7 +155,7 @@ function setAlarmState(alarmName) {
       StateValue: 'OK'
     };
     cloudwatch.setAlarmState(params, function(err, data) {
-      console.log('=== set cloudwatch alarm state ===');
+      console.log('=== cloudwatch set alarm state ===');
       if (err) console.log(err, err.stack); // an error occurred
       else     console.log(data);           // successful response
     });

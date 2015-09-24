@@ -21,6 +21,7 @@
     "properties": "^1.2.1",
     "request": "^2.63.0",
     "serve-favicon": "~2.2.1",
-    "url-parse": "^1.0.2"
+    "url-parse": "^1.0.2",
+    "uuid": "^2.0.1"
   }
 }
