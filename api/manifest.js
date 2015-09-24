@@ -20,11 +20,31 @@ router.post('/', function(req, res, next) {
 
   try {
     var count = 0;
-    var entries = [];
+    //var entries = [];
+    var messages = [];
 
     async.doWhilst(
       function(callback) {
         receiveMessage(req.body.dataSQSRegion, req.body.dataSQSName, function(err, data) {
+          if (err) {
+            console.log(err, err.stack);
+            callback(err);
+          } else {
+            if (data.Messages) {
+              count = data.Messages.length;
+              console.log('length = ' + count);
+              data.Messages.forEach(function(message) {
+                messages.push(message);
+              });
+            } else {
+              count = 0;
+              console.log('length = ' + count);
+            }
+
+            callback(null);
+          }
+
+          /*
           count = data.length;
           //console.log(data);
           data.forEach(function(entry) {
@@ -32,12 +52,20 @@ router.post('/', function(req, res, next) {
           });
 
           callback(null, '');
+          */
         });
       },
       function() { return count > 0 },
       function(err) {
         console.log('=== process notification finish ===');
         //setAlarmState(alarmName);
+
+        var groups = _.chunk(messages, 10);
+        groups.forEach(function(chunk) {
+          console.log(JSON.parse(chunk));
+        });
+
+        /*
         var entriesGroup = _.chunk(entries, 10);
         entriesGroup.forEach(function(chunk) {
           console.log({ 'entries': chunk });
@@ -67,6 +95,7 @@ router.post('/', function(req, res, next) {
             console.log(results);
           });
         });
+        */
       }
     );
   } catch (ex) {
@@ -86,16 +115,20 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 
 	var params = {
 		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
-    AttributeNames: [ 'All' ],
-		MaxNumberOfMessages: 10,
-    WaitTimeSeconds: 0
+    //AttributeNames: [ 'All' ],
+		MaxNumberOfMessages: 10
+    //WaitTimeSeconds: 0
 	};
 
+  sqs.receiveMessage(params, callback);
+
+  /*
   var count = 0;
 	sqs.receiveMessage(params, function(err, data) {
 		console.log('=== sqs receive message ===');
 		if (err) {
 			console.log(err, err.stack);
+      callback(err);
 		} else {
 			//console.log(data);
       var entries = [];
@@ -132,6 +165,7 @@ function receiveMessage(sqsRegion, sqsName, callback) {
       }
 		}
 	});
+  */
 }
 
 function deleteMessage(sqsRegion, sqsName, receiptHandle) {
