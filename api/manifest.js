@@ -18,19 +18,24 @@ router.post('/', function(req, res, next) {
 
   try {
     var count = 0;
+    var entries = [];
 
     async.doWhilst(
       function(callback) {
         receiveMessage(req.body.dataSQSRegion, req.body.dataSQSName, function(err, data) {
           count = data.length;
-          console.log(data);
+          //console.log(data);
+          data.forEach(function(entry) {
+            entries.push(entry);
+          }
           callback(null, '');
         });
       },
       function() { return count > 0 },
       function(err) {
-        //console.log('=== process notification finish ===');
+        console.log('=== process notification finish ===');
         //setAlarmState(alarmName);
+        //console.log(entries);
       }
     );
   } catch (ex) {
@@ -51,6 +56,7 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 	var params = {
 		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
 		MaxNumberOfMessages: 10
+    //WaitTimeSeconds: 10
 	};
 
   var count = 0;
@@ -72,7 +78,7 @@ function receiveMessage(sqsRegion, sqsName, callback) {
           var s3 = body.Records[0].s3;
           var sourceS3FullPath = 's3://' + s3.bucket.name + '/' + s3.object.key;
           entries.push({ 'url': sourceS3FullPath, 'mandatory': false });
-          //console.log(sourceS3FullPath);
+          console.log(sourceS3FullPath);
 
           // {
           //   "entries": [
