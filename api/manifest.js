@@ -36,8 +36,10 @@ router.post('/', function(req, res, next) {
       function(err) {
         console.log('=== process notification finish ===');
         //setAlarmState(alarmName);
-        console.log(_.chunk(entries, 10));
-        //console.log({ 'entries': entries });
+        var entriesGroup = _.chunk(entries, 10);
+        entriesGroup.forEach(function(chunk) {
+          console.log({ 'entries': chunk });
+        });
       }
     );
   } catch (ex) {
@@ -75,14 +77,14 @@ function receiveMessage(sqsRegion, sqsName, callback) {
         count = data.Messages.length;
 
         data.Messages.forEach(function(message) {
-          console.log(message);
+          //console.log(message);
           var receiptHandle = message.ReceiptHandle;
           var body = JSON.parse(message.Body);
           //console.log('receiptHandle = ' + receiptHandle);
           var s3 = body.Records[0].s3;
           var sourceS3FullPath = 's3://' + s3.bucket.name + '/' + s3.object.key;
           entries.push({ 'url': sourceS3FullPath, 'mandatory': false });
-          //console.log(sourceS3FullPath);
+          console.log(sourceS3FullPath);
 
           // {
           //   "entries": [
