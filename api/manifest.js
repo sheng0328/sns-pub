@@ -43,7 +43,6 @@ router.post('/', function(req, res, next) {
           console.log({ 'entries': chunk });
           var manifestS3Bucket = 'esc-manifest-sheng0328';
           var manifestS3Key = path.join(req.body.dataSQSName, 'manifest', uuid.v4() + '.json');
-          putObject(req.body.dataSQSRegion, manifestS3Bucket, manifestS3Key, { 'entries': chunk });
 
           var manifestSQSMessage = {
             'manifestS3Region': req.body.dataSQSRegion,
@@ -55,7 +54,18 @@ router.post('/', function(req, res, next) {
             'sourceS3Bucket': '<sourceS3Bucket>',
             'sourceS3Prefix': '<sourceS3Prefix>'
           };
-          sendMessage(req.body.dataSQSRegion, 'ManifestSQS-sheng0328', manifestSQSMessage);
+
+          async.series([
+              function(callback) {
+                putObject(req.body.dataSQSRegion, manifestS3Bucket, manifestS3Key, { 'entries': chunk }, callback);
+              },
+              function(callback) {
+                sendMessage(req.body.dataSQSRegion, 'ManifestSQS-sheng0328', manifestSQSMessage, callback);
+              }
+          ],
+          function(err, results) {
+            console.log(results);
+          });
         });
       }
     );
@@ -156,6 +166,8 @@ function putObject(region, bucket, key, data) {
     console.log('=== s3 put object ===');
     if (err) console.log(err, err.stack); // an error occurred
     else     console.log(data);           // successful response
+
+    callback(null, 's3PutObject');
   });
 }
 
@@ -171,6 +183,8 @@ function sendMessage(region, sqsName, message) {
     console.log('=== sqs send message ===');
     if (err) console.log(err, err.stack); // an error occurred
     else     console.log(data);           // successful response
+
+    callback(null, 'sqsSendMessage');
   });
 }
 
