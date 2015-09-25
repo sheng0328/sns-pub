@@ -20,8 +20,14 @@ router.post('/', function(req, res, next) {
   }
 
   receiveMessage(req.body.manifestSQSRegion, req.body.manifestSQSName, function(err, data) {
-    if (err) console.log(err, err.stack); // an error occurred
-    else     console.log(data);           // successful response
+    if (err) {
+      console.log(err, err.stack); // an error occurred
+    } else {
+      data.Messages.forEach(function(message) {
+        var body = JSON.parse(message.Body);
+        console.log(data);
+      });
+    }
   });
 
   var responseBody = {
@@ -37,9 +43,7 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 
 	var params = {
 		QueueUrl: 'https://sqs.us-west-2.amazonaws.com/764054367471/' + sqsName,
-    //AttributeNames: [ 'All' ],
-		MaxNumberOfMessages: 10
-    //WaitTimeSeconds: 0
+		MaxNumberOfMessages: 1
 	};
 
   sqs.receiveMessage(params, callback);
