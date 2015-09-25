@@ -7,7 +7,8 @@ var options = { region: 'us-west-2' };
 var cloudwatch  = new AWS.CloudWatch(options);
 
 //putMetricData();
-setAlarmState();
+setAlarmState('alarmDataSQS');
+setAlarmState('alarmManifestSQS');
 
 function putMetricData() {
   var params = {
@@ -39,10 +40,9 @@ function putMetricData() {
   });
 }
 
-
-function setAlarmState() {
+function setAlarmState(alarmName) {
   var params = {
-    AlarmName: 'alarmDataQ',
+    AlarmName: alarmName,
     StateReason: 'Reset Alarm',
     StateValue: 'OK'
   };

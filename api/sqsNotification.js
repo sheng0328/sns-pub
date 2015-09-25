@@ -63,7 +63,7 @@ function receiveNotification(body) {
   var path = '';
   if (_.startsWith(sqsName, 'esc-dataSQS')) {
     path = '/api/v1/manifest';
-  } else if (_.startsWith(sqsName, 'esc-dataSQS')) {
+  } else if (_.startsWith(sqsName, 'esc-manifestSQS')) {
     path = '/api/v1/datastore';
   }
 
