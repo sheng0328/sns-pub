@@ -60,7 +60,11 @@ router.post('/', function(req, res, next) {
         groups.forEach(function(chunk) {
           console.log('length = ' + chunk.length);
 
+          var body = JSON.parse(chunk[0].Body);
+          var s3 = body.Records[0].s3;
+
           var manifestS3Bucket = 'esc-manifest-sheng0328';
+          // <partnerId>/<dataSQSName>/manifest/<uuid>.json
           var manifestS3Key = path.join(req.body.dataSQSName, 'manifest', uuid.v4() + '.json');
 
           var manifestSQSMessage = {
@@ -70,7 +74,7 @@ router.post('/', function(req, res, next) {
             'manifestSQSRegion': req.body.dataSQSRegion,
             'manifestSQSName': 'esc-manifestSQS-sheng0328',
             'sourceS3Region': req.body.dataSQSRegion,
-            'sourceS3Bucket': '<sourceS3Bucket>',
+            'sourceS3Bucket': s3.bucket.name,
             'sourceS3Prefix': '<sourceS3Prefix>'
           };
 

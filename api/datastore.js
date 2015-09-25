@@ -26,6 +26,7 @@ router.post('/', function(req, res, next) {
       data.Messages.forEach(function(message) {
         var body = JSON.parse(message.Body);
         console.log(body);
+        copyCmd();
       });
     }
   });
@@ -47,6 +48,16 @@ function receiveMessage(sqsRegion, sqsName, callback) {
 	};
 
   sqs.receiveMessage(params, callback);
+}
+
+function copyCmd() {
+  var copyCmd = '';
+  copyCmd += 'copy ' + '<table_name>' + ' from \'s3://' + '<bucket_name>' + '/' + '<manifest_name>' + '\' \n';
+  copyCmd += 'credentials \'aws_access_key_id=' + '<access-key-id>' + ';aws_secret_access_key=' + '<secret-access-key>' + '\' \n';
+  copyCmd += 'manifest \n';
+  //copyCmd += 'gzip \n';
+  copyCmd += 'json \'auto\' ;';
+  console.log(copyCmd);
 }
 
 module.exports = router;
