@@ -41,7 +41,7 @@ function confirmSubscription(subscribeURL) {
   if (subscribeURL) {
     console.log('=== confirm subscription ===');
     var params = {
-      'url': subcribeURL
+      'url': subscribeURL
     };
     rest.performRequest(params, function(err, data) {
       if (err) console.log(err);
