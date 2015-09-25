@@ -61,19 +61,25 @@ function receiveNotification(body) {
   var message = JSON.parse(body.Message);
   var sqsName = message.Trigger.Dimensions[0].value;
   var path = '';
+  var requestBody = {};
   if (_.startsWith(sqsName, 'esc-dataSQS')) {
     path = '/api/v1/manifest';
+    requestBody = {
+      'dataSQSRegion': region,
+      'dataSQSName': sqsName
+    };
   } else if (_.startsWith(sqsName, 'esc-manifestSQS')) {
     path = '/api/v1/datastore';
+    requestBody = {
+      'manifestSQSRegion': region,
+      'manifestSQSName': sqsName
+    };
   }
 
   var params = {
     'url': 'http://localhost:3000' + path,
     'method': 'POST',
-    'requestBody': {
-      'dataSQSRegion': region,
-      'dataSQSName': sqsName
-    }
+    'requestBody': requestBody
   };
 
   rest.performRequest(params, function(err, data) {

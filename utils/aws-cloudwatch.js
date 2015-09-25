@@ -7,7 +7,7 @@ var options = { region: 'us-west-2' };
 var cloudwatch  = new AWS.CloudWatch(options);
 
 //putMetricData();
-setAlarmState('alarmDataSQS');
+//setAlarmState('alarmDataSQS');
 setAlarmState('alarmManifestSQS');
 
 function putMetricData() {
