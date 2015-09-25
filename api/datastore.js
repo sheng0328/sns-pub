@@ -23,11 +23,15 @@ router.post('/', function(req, res, next) {
     if (err) {
       console.log(err, err.stack); // an error occurred
     } else {
-      data.Messages.forEach(function(message) {
-        var body = JSON.parse(message.Body);
-        console.log(body);
-        copyCmd();
-      });
+      if (data.Messages) {
+        data.Messages.forEach(function(message) {
+          var body = JSON.parse(message.Body);
+          console.log(body);
+          copyCmd();
+        });
+      } else {
+        console.log(data);
+      }
     }
   });
 
