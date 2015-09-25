@@ -34,7 +34,11 @@ router.post('/', function(req, res, next) {
     }
   }
 
-  res.send('router.post respond with a resource');
+  var responseBody = {
+    'errorCode': 0,
+    'errorMsg': ''
+  };
+  res.status(200).json(responseBody);
 });
 
 function confirmSubscription(subscribeURL) {
@@ -55,10 +59,16 @@ function receiveNotification(body) {
   var topicArn = body.TopicArn;
   var region = topicArn.split(':')[3];
   var message = JSON.parse(body.Message);
-  sqsName = message.Trigger.Dimensions[0].value;
+  var sqsName = message.Trigger.Dimensions[0].value;
+  var path = '';
+  if (_.startsWith(sqsName, 'esc-dataSQS')) {
+    path = '/api/v1/manifest';
+  } else if (_.startsWith(sqsName, 'esc-dataSQS')) {
+    path = '/api/v1/datastore';
+  }
 
   var params = {
-    'url': 'http://localhost:3000/api/v1/manifest',
+    'url': 'http://localhost:3000' + path,
     'method': 'POST',
     'requestBody': {
       'dataSQSRegion': region,
@@ -72,6 +82,7 @@ function receiveNotification(body) {
   });
 }
 
+/*
 function processNotification(message) {
   var alarmName = message.AlarmName;
   if (alarmName) {
@@ -170,5 +181,6 @@ function setAlarmState(alarmName) {
     });
   }, 90 * 1000);
 }
+*/
 
 module.exports = router;

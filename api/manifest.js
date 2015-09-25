@@ -68,7 +68,7 @@ router.post('/', function(req, res, next) {
             'manifestS3Bucket': manifestS3Bucket,
             'manifestS3Path': manifestS3Key,
             'manifestSQSRegion': req.body.dataSQSRegion,
-            'manifestSQSName': 'ManifestSQS-sheng0328',
+            'manifestSQSName': 'esc-manifestSQS-sheng0328',
             'sourceS3Region': req.body.dataSQSRegion,
             'sourceS3Bucket': '<sourceS3Bucket>',
             'sourceS3Prefix': '<sourceS3Prefix>'
@@ -79,7 +79,7 @@ router.post('/', function(req, res, next) {
                 putObject(req.body.dataSQSRegion, manifestS3Bucket, manifestS3Key, chunk, callback);
               },
               function(callback) {
-                sendMessage(req.body.dataSQSRegion, 'ManifestSQS-sheng0328', manifestSQSMessage, callback);
+                sendMessage(req.body.dataSQSRegion, 'esc-manifestSQS-sheng0328', manifestSQSMessage, callback);
               },
               function(callback) {
                 deleteMessageBatch(req.body.dataSQSRegion, req.body.dataSQSName, chunk, callback);
