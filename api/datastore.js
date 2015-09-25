@@ -61,6 +61,7 @@ function copyCmd() {
   copyCmd += 'manifest \n';
   //copyCmd += 'gzip \n';
   copyCmd += 'json \'auto\' ;';
+  copyCmd += 'json \'s3://mybucket/category_jsonpath.json\';';
   console.log(copyCmd);
 }
 
