@@ -17,7 +17,11 @@ router.post('/', function(req, res, next) {
   }
 
   if (req.body.Type === 'SubscriptionConfirmation') {
-    confirmSubscription(req.body.SubscribeURL);
+    try {
+      confirmSubscription(req.body.SubscribeURL);
+    } catch (ex) {
+      console.log(ex);
+    }
   }
 
   if (req.body.Type === 'Notification') {
