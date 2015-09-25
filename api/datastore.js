@@ -25,7 +25,7 @@ router.post('/', function(req, res, next) {
     } else {
       data.Messages.forEach(function(message) {
         var body = JSON.parse(message.Body);
-        console.log(data);
+        console.log(body);
       });
     }
   });
